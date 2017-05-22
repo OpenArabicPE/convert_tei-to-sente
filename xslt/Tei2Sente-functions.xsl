@@ -37,7 +37,16 @@
         <xsl:param name="p_editor" select="$p_input/descendant::tei:editor"/>
         <xsl:param name="p_date-publication" select="$p_input/descendant::tei:imprint/tei:date[1]"/>
         <xsl:param name="p_biblScope" select="$p_input/descendant::tei:monogr/tei:biblScope"/>
-        <xsl:param name="p_url" select="$p_input/descendant::tei:ref[@type='url']/@target"/>
+        <xsl:param name="p_url" select="$p_input/descendant::tei:ref[@type='url'][1]/@target"/>
+        <!-- takes CSV as input -->
+        <xsl:param name="p_url-attachments">
+            <xsl:for-each select="$p_input/descendant::tei:ref[@type='url']/@target">
+                <xsl:value-of select="."/>
+                <xsl:if test="following::tei:ref[@type='url']/@target">
+                    <xsl:text>, </xsl:text>
+                </xsl:if>
+            </xsl:for-each>
+        </xsl:param>
         <tss:reference>
             <tss:publicationType>
                 <!-- this depends on the input -->
@@ -134,6 +143,14 @@
                     <xsl:value-of select="$p_url"/>
                 </tss:characteristic>
             </tss:characteristics>
+            <!-- potential attachments -->
+            <tss:attachments>
+                <xsl:for-each select="tokenize($p_url-attachments,',')">
+                    <tss:attachmentReference>
+                        <URL><xsl:value-of select="."/></URL>
+                    </tss:attachmentReference>
+                </xsl:for-each>
+            </tss:attachments>
         </tss:reference>
     </xsl:template>
     
