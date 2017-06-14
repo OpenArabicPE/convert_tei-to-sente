@@ -14,7 +14,7 @@
     <xsl:param name="p_lang-target" select="'ar-Latn-x-ijmes'"/>
 
     <xsl:template match="/">
-        <xsl:result-document href="../metadata/{$vgFileId}-bibl.Sente.xml">
+        <xsl:result-document href="../metadata/{$vgFileId}-bibl.TSS.xml">
             <tss:senteContainer version="1.0" xsi:schemaLocation="http://www.thirdstreetsoftware.com/SenteXML-1.0 SenteXML.xsd">
                 <tss:library>
                     <tss:references>
