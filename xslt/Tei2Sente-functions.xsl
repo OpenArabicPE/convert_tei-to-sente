@@ -30,7 +30,7 @@
   
 
     <!-- the Sente output -->
-    <xsl:template match="tei:bibl | tei:biblStruct" mode="m_tei2sente">
+    <xsl:template match="tei:bibl | tei:biblStruct" name="t_bibl-to-reference" mode="m_tei2sente">
         <xsl:param name="p_input" select="."/>
         <!-- other params can derive from p_input -->
         <xsl:param name="p_author" select="$p_input/descendant::tei:author"/>
@@ -93,7 +93,8 @@
                 <xsl:if test="$p_input/descendant::tei:imprint/tei:date[@datingMethod='#cal_islamic'][@when-custom]">
                     <xsl:variable name="v_date" select="$p_input/descendant::tei:imprint/tei:date[@datingMethod='#cal_islamic'][@when-custom][1]/@when-custom"/>
                     <tss:characteristic name="Date Hijri">
-                        <xsl:value-of select="format-date($v_date,'[D1]')"/>
+                        <xsl:value-of select="format-number(number(tokenize($v_date,'-')[3]),'0')"/>
+<!--                        <xsl:value-of select="format-date($v_date,'[D1]')"/>-->
                         <xsl:text> </xsl:text>
                         <xsl:call-template name="funcDateMonthNameNumber">
                             <xsl:with-param name="pDate" select="$v_date"/>
@@ -101,14 +102,16 @@
                             <xsl:with-param name="pMode" select="'name'"/>
                         </xsl:call-template>
                         <xsl:text> </xsl:text>
-                        <xsl:value-of select="format-date($v_date,'[Y1]')"/>
+                        <xsl:value-of select="format-number(number(tokenize($v_date,'-')[1]),'0')"/>
+<!--                        <xsl:value-of select="format-date($v_date,'[Y1]')"/>-->
                     </tss:characteristic>
                 </xsl:if>
                 <!-- toggle Julian (*rūmī*) date -->
                 <xsl:if test="$p_input/descendant::tei:imprint/tei:date[@datingMethod='#cal_julian'][@when-custom]">
                     <xsl:variable name="v_date" select="$p_input/descendant::tei:imprint/tei:date[@datingMethod='#cal_julian'][@when-custom][1]/@when-custom"/>
                     <tss:characteristic name="Date Rumi">
-                        <xsl:value-of select="format-date($v_date,'[D1]')"/>
+                        <xsl:value-of select="format-number(number(tokenize($v_date,'-')[3]),'0')"/>
+<!--                        <xsl:value-of select="format-date($v_date,'[D1]')"/>-->
                         <xsl:text> </xsl:text>
                         <xsl:call-template name="funcDateMonthNameNumber">
                             <xsl:with-param name="pDate" select="$v_date"/>
@@ -116,14 +119,16 @@
                             <xsl:with-param name="pMode" select="'name'"/>
                         </xsl:call-template>
                         <xsl:text> </xsl:text>
-                        <xsl:value-of select="format-date($v_date,'[Y1]')"/>
+                        <xsl:value-of select="format-number(number(tokenize($v_date,'-')[1]),'0')"/>
+<!--                        <xsl:value-of select="format-date($v_date,'[Y1]')"/>-->
                     </tss:characteristic>
                 </xsl:if>
                 <!-- toggle Ottoman fiscal (*mālī*) date -->
                 <xsl:if test="$p_input/descendant::tei:imprint/tei:date[@datingMethod='#cal_ottomanfiscal'][@when-custom]">
                     <xsl:variable name="v_date" select="$p_input/descendant::tei:imprint/tei:date[@datingMethod='#cal_ottomanfiscal'][@when-custom][1]/@when-custom"/>
                     <tss:characteristic name="Date Rumi">
-                        <xsl:value-of select="format-date($v_date,'[D1]')"/>
+                        <xsl:value-of select="format-number(number(tokenize($v_date,'-')[3]),'0')"/>
+<!--                        <xsl:value-of select="format-date($v_date,'[D1]')"/>-->
                         <xsl:text> </xsl:text>
                         <xsl:call-template name="funcDateMonthNameNumber">
                             <xsl:with-param name="pDate" select="$v_date"/>
@@ -131,12 +136,22 @@
                             <xsl:with-param name="pMode" select="'name'"/>
                         </xsl:call-template>
                         <xsl:text> </xsl:text>
-                        <xsl:value-of select="format-date($v_date,'[Y1]')"/>
+                        <xsl:value-of select="format-number(number(tokenize($v_date,'-')[1]),'0')"/>
+<!--                        <xsl:value-of select="format-date($v_date,'[Y1]')"/>-->
                     </tss:characteristic>
                 </xsl:if>
                 <!-- citation identifier -->
                 <tss:characteristic name="Citation identifier">
-                    <xsl:value-of select="concat(lower-case(replace(descendant::tei:title[@xml:lang=$p_lang-target][not(@type='sub')],'\W','-')),'-',$p_biblScope/descendant-or-self::tei:biblScope[@unit='volume']/@from,'-',$p_biblScope/descendant-or-self::tei:biblScope[@unit='issue']/@from)"/>
+                    <xsl:variable name="v_volume" select="$p_biblScope/descendant-or-self::tei:biblScope[@unit='volume']/@from"/>
+                    <xsl:variable name="v_issue" select="$p_biblScope/descendant-or-self::tei:biblScope[@unit='issue']/@from"/>
+                    <xsl:choose>
+                        <xsl:when test="$p_base-cit-id!=''">
+                            <xsl:value-of select="concat($p_base-cit-id,'-',$v_volume,'-',$v_issue)"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:value-of select="concat(lower-case(replace(descendant::tei:title[@xml:lang=$p_lang-target][not(@type='sub')],'\W','-')),'-',$v_volume,'-',$v_issue)"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
                 </tss:characteristic>
                 <!-- URL -->
                 <tss:characteristic name="URL">
@@ -190,10 +205,18 @@
             <xsl:otherwise>
                 <tss:characteristic name="publicationTitle">
                     <xsl:apply-templates select="." mode="m_plain-text"/>
-                    <xsl:if test="following-sibling::tei:title[@level=$v_level][@xml:lang=$p_lang-target]">
-                        <xsl:text>: </xsl:text>
-                        <xsl:apply-templates select="following-sibling::tei:title[@level=$v_level][@xml:lang=$p_lang-target][1]" mode="m_plain-text"/>
+                    <xsl:if test="$p_title-long=true()">
+                        <xsl:if test="following-sibling::tei:title[@level=$v_level][@xml:lang=$p_lang-target]">
+                            <xsl:text>: </xsl:text>
+                            <xsl:apply-templates select="following-sibling::tei:title[@level=$v_level][@xml:lang=$p_lang-target][1]" mode="m_plain-text"/>
+                        </xsl:if>
                     </xsl:if>
+                </tss:characteristic>
+                <tss:characteristic name="Short Titel">
+                    <xsl:value-of select="tokenize(.,'\s')[1]"/>
+                </tss:characteristic>
+                <tss:characteristic name="Shortened title">
+                    <xsl:value-of select="tokenize(.,'\s')[1]"/>
                 </tss:characteristic>
             </xsl:otherwise>
         </xsl:choose>
