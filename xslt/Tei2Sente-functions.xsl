@@ -3,7 +3,8 @@
     xmlns:tei="http://www.tei-c.org/ns/1.0" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:tss="http://www.thirdstreetsoftware.com/SenteXML-1.0"
-    xpath-default-namespace="http://www.loc.gov/mods/v3" version="2.0">
+    xmlns:oape="https://openarabicpe.github.io/ns"
+    xpath-default-namespace="http://www.loc.gov/mods/v3" version="3.0">
     <xsl:output method="xml" encoding="UTF-8" indent="yes" omit-xml-declaration="no" version="1.0"/>
 <!--    <xsl:strip-space elements="*"/>-->
     <xsl:preserve-space elements="tei:head tei:bibl"/>
@@ -13,7 +14,8 @@
     <!-- to do:
         + add information on edition: i.e. TEI edition
         + add information on collaborators on the digital edition -->
-    <xsl:include href="https://cdn.rawgit.com/tillgrallert/xslt-calendar-conversion/master/date-function.xsl"/>
+<!--    <xsl:include href="https://cdn.rawgit.com/tillgrallert/xslt-calendar-conversion/master/date-function.xsl"/>-->
+    <xsl:include href="https://tillgrallert.github.io/xslt-calendar-conversion/functions/date-functions.xsl"/>
 
 
     
@@ -93,51 +95,21 @@
                 <xsl:if test="$p_input/descendant::tei:imprint/tei:date[@datingMethod='#cal_islamic'][@when-custom]">
                     <xsl:variable name="v_date" select="$p_input/descendant::tei:imprint/tei:date[@datingMethod='#cal_islamic'][@when-custom][1]/@when-custom"/>
                     <tss:characteristic name="Date Hijri">
-                        <xsl:value-of select="format-number(number(tokenize($v_date,'-')[3]),'0')"/>
-<!--                        <xsl:value-of select="format-date($v_date,'[D1]')"/>-->
-                        <xsl:text> </xsl:text>
-                        <xsl:call-template name="funcDateMonthNameNumber">
-                            <xsl:with-param name="pDate" select="$v_date"/>
-                            <xsl:with-param name="pLang" select="'HIjmes'"/>
-                            <xsl:with-param name="pMode" select="'name'"/>
-                        </xsl:call-template>
-                        <xsl:text> </xsl:text>
-                        <xsl:value-of select="format-number(number(tokenize($v_date,'-')[1]),'0')"/>
-<!--                        <xsl:value-of select="format-date($v_date,'[Y1]')"/>-->
+                        <xsl:value-of select="oape:date-format-iso-string-to-tei($v_date, '#cal_islamic', true(), false(),'ar-Latn-x-ijmes')"/>
                     </tss:characteristic>
                 </xsl:if>
                 <!-- toggle Julian (*rūmī*) date -->
                 <xsl:if test="$p_input/descendant::tei:imprint/tei:date[@datingMethod='#cal_julian'][@when-custom]">
                     <xsl:variable name="v_date" select="$p_input/descendant::tei:imprint/tei:date[@datingMethod='#cal_julian'][@when-custom][1]/@when-custom"/>
                     <tss:characteristic name="Date Rumi">
-                        <xsl:value-of select="format-number(number(tokenize($v_date,'-')[3]),'0')"/>
-<!--                        <xsl:value-of select="format-date($v_date,'[D1]')"/>-->
-                        <xsl:text> </xsl:text>
-                        <xsl:call-template name="funcDateMonthNameNumber">
-                            <xsl:with-param name="pDate" select="$v_date"/>
-                            <xsl:with-param name="pLang" select="'JIjmes'"/>
-                            <xsl:with-param name="pMode" select="'name'"/>
-                        </xsl:call-template>
-                        <xsl:text> </xsl:text>
-                        <xsl:value-of select="format-number(number(tokenize($v_date,'-')[1]),'0')"/>
-<!--                        <xsl:value-of select="format-date($v_date,'[Y1]')"/>-->
+                        <xsl:value-of select="oape:date-format-iso-string-to-tei($v_date, '#cal_julian', true(), false(),'ar-Latn-x-ijmes')"/>
                     </tss:characteristic>
                 </xsl:if>
                 <!-- toggle Ottoman fiscal (*mālī*) date -->
                 <xsl:if test="$p_input/descendant::tei:imprint/tei:date[@datingMethod='#cal_ottomanfiscal'][@when-custom]">
                     <xsl:variable name="v_date" select="$p_input/descendant::tei:imprint/tei:date[@datingMethod='#cal_ottomanfiscal'][@when-custom][1]/@when-custom"/>
                     <tss:characteristic name="Date Rumi">
-                        <xsl:value-of select="format-number(number(tokenize($v_date,'-')[3]),'0')"/>
-<!--                        <xsl:value-of select="format-date($v_date,'[D1]')"/>-->
-                        <xsl:text> </xsl:text>
-                        <xsl:call-template name="funcDateMonthNameNumber">
-                            <xsl:with-param name="pDate" select="$v_date"/>
-                            <xsl:with-param name="pLang" select="'MIjmes'"/>
-                            <xsl:with-param name="pMode" select="'name'"/>
-                        </xsl:call-template>
-                        <xsl:text> </xsl:text>
-                        <xsl:value-of select="format-number(number(tokenize($v_date,'-')[1]),'0')"/>
-<!--                        <xsl:value-of select="format-date($v_date,'[Y1]')"/>-->
+                        <xsl:value-of select="oape:date-format-iso-string-to-tei($v_date, '#cal_ottomanfiscal', true(), false(),'ar-Latn-x-ijmes')"/>
                     </tss:characteristic>
                 </xsl:if>
                 <!-- citation identifier -->
