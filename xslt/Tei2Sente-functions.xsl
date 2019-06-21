@@ -14,8 +14,9 @@
     <!-- to do:
         + add information on edition: i.e. TEI edition
         + add information on collaborators on the digital edition -->
-<!--    <xsl:include href="https://cdn.rawgit.com/tillgrallert/xslt-calendar-conversion/master/date-function.xsl"/>-->
-    <xsl:include href="https://tillgrallert.github.io/xslt-calendar-conversion/functions/date-functions.xsl"/>
+    <!-- there is no need to always load the online version -->
+    <xsl:include href="../../../xslt-calendar-conversion/functions/date-functions.xsl"/>
+<!--    <xsl:include href="https://tillgrallert.github.io/xslt-calendar-conversion/functions/date-functions.xsl"/>-->
 
 
     
@@ -95,21 +96,21 @@
                 <xsl:if test="$p_input/descendant::tei:imprint/tei:date[@datingMethod='#cal_islamic'][@when-custom]">
                     <xsl:variable name="v_date" select="$p_input/descendant::tei:imprint/tei:date[@datingMethod='#cal_islamic'][@when-custom][1]/@when-custom"/>
                     <tss:characteristic name="Date Hijri">
-                        <xsl:value-of select="oape:date-format-iso-string-to-tei($v_date, '#cal_islamic', true(), false(),'ar-Latn-x-ijmes')"/>
+                        <xsl:value-of select="oape:date-format-iso-string-to-tei($v_date, '#cal_islamic', true(), false(),'ar-Latn-x-sente')"/>
                     </tss:characteristic>
                 </xsl:if>
                 <!-- toggle Julian (*rūmī*) date -->
                 <xsl:if test="$p_input/descendant::tei:imprint/tei:date[@datingMethod='#cal_julian'][@when-custom]">
                     <xsl:variable name="v_date" select="$p_input/descendant::tei:imprint/tei:date[@datingMethod='#cal_julian'][@when-custom][1]/@when-custom"/>
                     <tss:characteristic name="Date Rumi">
-                        <xsl:value-of select="oape:date-format-iso-string-to-tei($v_date, '#cal_julian', true(), false(),'ar-Latn-x-ijmes')"/>
+                        <xsl:value-of select="oape:date-format-iso-string-to-tei($v_date, '#cal_julian', true(), false(),'ar-Latn-x-sente')"/>
                     </tss:characteristic>
                 </xsl:if>
                 <!-- toggle Ottoman fiscal (*mālī*) date -->
                 <xsl:if test="$p_input/descendant::tei:imprint/tei:date[@datingMethod='#cal_ottomanfiscal'][@when-custom]">
                     <xsl:variable name="v_date" select="$p_input/descendant::tei:imprint/tei:date[@datingMethod='#cal_ottomanfiscal'][@when-custom][1]/@when-custom"/>
                     <tss:characteristic name="Date Rumi">
-                        <xsl:value-of select="oape:date-format-iso-string-to-tei($v_date, '#cal_ottomanfiscal', true(), false(),'ar-Latn-x-ijmes')"/>
+                        <xsl:value-of select="oape:date-format-iso-string-to-tei($v_date, '#cal_ottomanfiscal', true(), false(),'ar-Latn-x-sente')"/>
                     </tss:characteristic>
                 </xsl:if>
                 <!-- citation identifier -->
